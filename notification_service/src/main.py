@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 import src.core.logger
-from src.api.v1 import healthcheck
+from src.api.v1 import healthcheck, notification
 from src.core.config import settings
 
 
@@ -31,6 +31,7 @@ app = FastAPI(
 app.include_router(
     healthcheck.router, prefix="/api/v1/healthcheck", tags=["healthcheck"]
 )
+app.include_router(notification.router, prefix="/api/v1/notification")
 
 
 if __name__ == "__main__":

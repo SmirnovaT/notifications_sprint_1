@@ -17,3 +17,16 @@ docker compose up --build -d
 6. cd notification_service
 7. uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
+____________________________________________________________________________
+Работа с RabbitMQ
+____________________________________________________________________________
+Запустить контейнер локально
+
+```
+docker run --rm -p 15672:15672 rabbitmq:3.10.7-management
+```
+
+Открыть веб-интерфейс RabbitMQ в браузере
+(login - guest, password - guest)
+```
+http://127.0.0.1:15672/
