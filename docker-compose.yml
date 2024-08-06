@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: ./notification_service
+    restart: always
+    env_file:
+      - ./notification_service/.env
+    expose:
+      - 8000
