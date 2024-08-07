@@ -14,31 +14,60 @@ def generate_event() -> dict:
         "timestamp": fake.date_time_this_year(
             before_now=True, after_now=False, tzinfo=timezone(timedelta(hours=3))
         ).isoformat(),
-        "fingerprint": f"{fake.user_agent()} {fake.random_int(min=1000, max=9999)}x{fake.random_int(min=1000, max=9999)} UTC+3; {fake.locale()} Windows; {str(uuid.uuid4())}",
-
+        "template_id": str(uuid.uuid4()),
+        "service": fake.text(10)
     }
 
 def generate_new_like_for_review() -> dict:
     """Добавление нового лайка для ревью """
 
     event_data = generate_event()
-    event_data.update({
-        "film_id": str(uuid.uuid4()),
-        "review_id": str(uuid.uuid4()),
-        "user_id": str(uuid.uuid4()),
-        "score": fake.random_int(min=0, max=10)
-    })
+    event_data.update(
+        {
+            "user_id": str(uuid.uuid4()),
+            "type": "like",
+            "data":
+                {
+                    "film_id": str(uuid.uuid4()),
+                    "review_id": str(uuid.uuid4()),
+                    "user_id": str(uuid.uuid4()),
+                    "score": fake.random_int(min=0, max=10)
+                }
+        })
     return event_data
 
 def generate_new_series() -> dict:
     """Добавление новой серии сериала"""
-    pass
+    event_data = generate_event()
+    event_data.update(
+        {
+            "type": "series",
+            "data":
+                {
+                    "film_id": str(uuid.uuid4())
+                }
+        }
+    )
 
-def generate_new_refistration() -> dict:
+def generate_new_registration() -> dict:
     """Регистрация нового пользователя"""
-    pass
+    event_data = generate_event()
+    event_data.update(
+        {
+            "type": "new_user",
+            "user_id": str(uuid.uuid4()),
+            "data": {"url": fake.text(10)}
+        }
+    )
 
 def generate_all_users_event() -> dict:
     """Добавление оповещения всех пользователей"""
-    pass
+    event_data = generate_event()
+    event_data.update(
+        {
+            "type": "news"
+        }
+    )
+
+
 

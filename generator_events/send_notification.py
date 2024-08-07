@@ -3,20 +3,20 @@ import time
 
 import requests
 
-from app.src.core.config import settings
-from generator_events.send_to_ugc import (
-    generate_new_like,
+from notification_service.src.core.config import settings
+from generator_events.events import (
     generate_new_like_for_review,
-    generate_new_review,
-    generate_new_bookmark
+    generate_new_series,
+    generate_new_registration,
+    generate_all_users_event
 )
 from generator_events.jwt import create_access_and_refresh_tokens
 
 event_functions = [
-    generate_new_like,
     generate_new_like_for_review,
-    generate_new_review,
-    generate_new_bookmark,
+    generate_new_series,
+    generate_new_registration,
+    generate_all_users_event
 ]
 
 
