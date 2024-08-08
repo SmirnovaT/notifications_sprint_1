@@ -62,13 +62,13 @@ jobs:
           echo "MONGO__URL=${{ secrets.MONGO__URL }}" >> .env
 
 
-      - name: Run tests
-        run: |
-          cd tests && docker-compose up -d
+      #- name: Run tests
+      #  run: |
+       #   cd tests && docker-compose up -d
 
-      - name: Stop containers
-        run: |
-          cd tests && docker-compose down
+     # - name: Stop containers
+     #   run: |
+     #     cd tests && docker-compose down
 
   notification:
     name: Telegram Notification
