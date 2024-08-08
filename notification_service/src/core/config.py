@@ -10,6 +10,10 @@ class Settings(BaseSettings):
 
     project_name: str = "notification_service"
     app_port: int = 8000
+    notification_api_url: str
+
+    private_key: str
+    public_key: str
 
     rabbitmq_username: str
     rabbitmq_password: str

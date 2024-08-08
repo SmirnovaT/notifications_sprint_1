@@ -24,9 +24,7 @@ def calculate_iat_and_exp_tokens() -> Tuple[int, int, int]:
     """
     Calculates 'iat' and 'exp' for access and refresh tokens
     """
-    current_date_and_time_datetime, iat_timestamp = (
-        calculate_current_date_and_time()
-    )
+    current_date_and_time_datetime, iat_timestamp = calculate_current_date_and_time()
 
     exp_access_token = current_date_and_time_datetime + timedelta(minutes=15)
     exp_refresh_token = current_date_and_time_datetime + timedelta(days=10)
@@ -37,9 +35,7 @@ def calculate_iat_and_exp_tokens() -> Tuple[int, int, int]:
     return iat_timestamp, exp_access_token_timestamp, exp_refresh_token_timestamp
 
 
-def create_access_and_refresh_tokens(
-        user_login: str, user_role: str
-) -> Tuple[str, str]:
+def create_access_and_refresh_tokens(service_name) -> Tuple[str, str]:
     """Creates a pair of access and refresh tokens"""
 
     iat, exp_access_token, exp_refresh_token = calculate_iat_and_exp_tokens()
@@ -48,8 +44,7 @@ def create_access_and_refresh_tokens(
 
     access_token_payload = {
         "iss": "Auth service",
-        "user_login": user_login,
-        "user_role": user_role,
+        "service_name": service_name,
         "type": "access",
         "exp": exp_access_token,
         "iat": iat,
@@ -57,8 +52,7 @@ def create_access_and_refresh_tokens(
 
     refresh_token_payload = {
         "iss": "Auth service",
-        "user_login": user_login,
-        "user_role": user_role,
+        "service_name": service_name,
         "type": "refresh",
         "exp": exp_refresh_token,
         "iat": iat,

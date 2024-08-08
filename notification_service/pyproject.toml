@@ -14,6 +14,8 @@ pydantic = "^2.8.2"
 pydantic-settings = "^2.4.0"
 uvicorn = "^0.30.5"
 aiormq = "^6.8.0"
+faker = "^26.2.0"
+pyjwt = "^2.8.0"
 
 [tool.poetry.group.prod]
 optional = true
