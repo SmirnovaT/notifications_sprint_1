@@ -14,7 +14,6 @@ def generate_event() -> dict:
         "timestamp": fake.date_time_this_year(
             before_now=True, after_now=False, tzinfo=timezone(timedelta(hours=3))
         ).isoformat(),
-        "template_id": str(uuid.uuid4()),
         "service": fake.text(10)
     }
 
@@ -24,10 +23,10 @@ def generate_new_like_for_review() -> dict:
     event_data = generate_event()
     event_data.update(
         {
-            "user_id": str(uuid.uuid4()),
             "type": "like",
             "data":
                 {
+                    "author_id": str(uuid.uuid4()),
                     "film_id": str(uuid.uuid4()),
                     "review_id": str(uuid.uuid4()),
                     "user_id": str(uuid.uuid4()),
@@ -55,8 +54,9 @@ def generate_new_registration() -> dict:
     event_data.update(
         {
             "type": "new_user",
-            "user_id": str(uuid.uuid4()),
-            "data": {"url": fake.text(10)}
+            "data": {
+                "user_id": str(uuid.uuid4()),
+                "url": fake.text(10)}
         }
     )
 

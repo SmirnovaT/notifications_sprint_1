@@ -6,7 +6,7 @@ from typing import Tuple
 
 import jwt
 
-from src.core.config import settings
+from notification_service.src.core.config import settings
 
 
 def calculate_current_date_and_time() -> Tuple[dt, int]:
