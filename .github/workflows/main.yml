@@ -24,6 +24,7 @@ jobs:
 
       - name: Install Poetry
         run: |
+          cd notification_service
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
