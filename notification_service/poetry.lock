@@ -179,6 +179,22 @@ pycodestyle = ">=2.12.0,<2.13.0"
 pyflakes = ">=3.2.0,<3.3.0"
 
 [[package]]
+name = "flake8-html"
+version = "0.4.3"
+description = "Generate HTML reports of flake8 violations"
+optional = false
+python-versions = "*"
+files = [
+    {file = "flake8-html-0.4.3.tar.gz", hash = "sha256:8b870299620cc4a06f73644a1b4d457799abeca1cc914c62ae71ec5bf65c79a5"},
+    {file = "flake8_html-0.4.3-py2.py3-none-any.whl", hash = "sha256:8f126748b1b0edd6cd39e87c6192df56e2f8655b0aa2bb00ffeac8cf27be4325"},
+]
+
+[package.dependencies]
+flake8 = ">=3.3.0"
+jinja2 = ">=3.1.0"
+pygments = ">=2.2.0"
+
+[[package]]
 name = "gunicorn"
 version = "22.0.0"
 description = "WSGI HTTP Server for UNIX"
@@ -1124,4 +1140,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ad58e62c2e5883fd0576afb0404559e261db52147d647eba3cfc7c4fc0503e99"
+content-hash = "90d7a550c5f8ef37af8491aa7d9b3950bc7115cc490926e4c72a7845416e19cb"
