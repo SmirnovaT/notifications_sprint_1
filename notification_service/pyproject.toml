@@ -15,6 +15,7 @@ pydantic-settings = "^2.4.0"
 uvicorn = "^0.30.5"
 flake8 = "^7.1.0"
 flake8-html = "^0.4.3"
+wemake-python-styleguide = "^0.19.2"
 
 [tool.poetry.group.prod]
 optional = true
