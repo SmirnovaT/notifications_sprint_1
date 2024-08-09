@@ -44,7 +44,7 @@ jobs:
       - name: Run flake8
         run: |
           cd notification_service
-          poetry run flake8 app/src --config=setup.cfg --format=html --htmldir=reports/wemake-python-styleguide/ --exit-zero
+          poetry run flake8
 
 
       - name: Upload reports
