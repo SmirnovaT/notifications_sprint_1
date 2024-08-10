@@ -4,7 +4,6 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-import src.core.logger
 from src.api.v1 import healthcheck
 from src.core.config import settings
 
