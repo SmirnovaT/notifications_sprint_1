@@ -7,3 +7,23 @@ services:
       - ./notification_service/.env
     expose:
       - 8000
+    networks:
+      - notification
+
+
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    depends_on:
+      - app
+    networks:
+      - notification
+
+
+networks:
+  notification:

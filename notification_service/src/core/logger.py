@@ -1,3 +1,5 @@
+import logging.config
+
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOG_DEFAULT_HANDLERS = ["console"]
 
@@ -43,3 +45,6 @@ LOGGING = {
         "handlers": LOG_DEFAULT_HANDLERS,
     },
 }
+
+logging.config.dictConfig(LOGGING)
+notification_logger = logging.getLogger("notification_service_logger")
