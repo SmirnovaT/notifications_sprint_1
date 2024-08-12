@@ -1,0 +1,93 @@
+name: Python Package
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+
+      - name: Install Poetry
+        run: |
+          cd notification_service
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+
+      - name: Create folder for report
+        run: |
+          mkdir -p reports/wemake-python-styleguide/
+          mkdir -p reports/mypy/
+
+
+      - name: Run mypy
+        run: |
+          poetry run mypy --ignore-missing-imports . --html-report reports/mypy/ || true
+
+
+      - name: Run flake8
+        run: |
+          cd notification_service
+          poetry run flake8
+
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.python-version }}
+          path: reports/
+
+      - name: Setup environment variables
+        run: |
+          echo "PROJECT_NAME=${{ secrets.PROJECT_NAME }}" >> .env
+          echo "PUBLIC_KEY=${{ secrets.PUBLIC_KEY }}" >> .env
+          echo "DEFAULT_HOST=${{ secrets.DEFAULT_HOST }}" >> .env
+          echo "DEFAULT_PORT=${{ secrets.DEFAULT_PORT }}" >> .env
+          echo "MONGO__URL=${{ secrets.MONGO__URL }}" >> .env
+
+
+      #- name: Run tests
+      #  run: |
+       #   cd tests && docker-compose up -d
+
+     # - name: Stop containers
+     #   run: |
+     #     cd tests && docker-compose down
+
+  notification:
+    name: Telegram Notification
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    needs: build
+    steps:
+    - name: Send telegram notification
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          ${{ github.repository }}:
+          Amazing ${{ github.actor }}😎 
+          Сreate new Pull Request 🔥
+
+          Please review the changes and check the code: 
+
+          https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+          
+          Pipeline status: ${{ needs.build.result }}

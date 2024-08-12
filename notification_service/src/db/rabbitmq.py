@@ -11,28 +11,26 @@ async def create_connection_rabbitmq() -> aiormq.abc.AbstractConnection:
 
     connection_string = (
         f"amqp://{settings.rabbitmq_username}:{settings.rabbitmq_password}@"
-        f"{settings.rabbitmq_host}:{settings.rabbitmq_port}/"
+        + f"{settings.rabbitmq_host}:{settings.rabbitmq_port}/"
     )
-    connection_ = await aiormq.connect(connection_string)
-    return connection_
+    return await aiormq.connect(connection_string)
 
 
 async def create_channel_rabbitmq(
-    connection_: aiormq.abc.AbstractConnection,
+    _connection: aiormq.abc.AbstractConnection,
 ) -> aiormq.abc.AbstractChannel:
     """Создание канала для отправки сообщений."""
 
-    channel_ = await connection_.channel()
-    return channel_
+    return await _connection.channel()
 
 
-async def init_queues(channel_: aiormq.abc.AbstractChannel) -> None:
+async def init_queues(_channel: aiormq.abc.AbstractChannel) -> None:
     """Функция инициализирует очередь в RabbitMQ."""
 
-    await channel_.queue_declare(
+    await _channel.queue_declare(
         queue=settings.rabbitmq_queue_notifications, durable=True
     )
-    await channel_.basic_qos(prefetch_count=1, global_=True)
+    await _channel.basic_qos(prefetch_count=1, global_=True)
 
 
 async def send_to_rabbitmq(routing_key: str, body: bytes) -> None:
