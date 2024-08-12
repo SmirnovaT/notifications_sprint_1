@@ -53,9 +53,10 @@ async def verify_access_token_dep(
 
 async def validate_token(token: str) -> dict:
     """Validates token"""
+    leeway = 30
     try:
         decoded_token: dict[str, str] = jwt.decode(
-            jwt=token, key=settings.public_key, algorithms=["RS256"], leeway=30
+            jwt=token, key=settings.public_key, algorithms=["RS256"], leeway=leeway
         )
     except jwt.exceptions.DecodeError as decode_error:
         notification_logger.error(f"Error while JWT decoding: {decode_error}")
