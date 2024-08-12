@@ -82,7 +82,7 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          ${{ secrets.PROJECT_NAME }}:
+          ${{ github.repository }}:
           Amazing ${{ github.actor }}😎 
           Сreate new Pull Request 🔥
 
