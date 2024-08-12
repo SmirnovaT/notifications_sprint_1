@@ -21,7 +21,4 @@ def generate_access_token(
         "exp": expire,
         "iat": datetime_now,
     }
-    encoded_jwt = jwt.encode(
-        access_token_payload, settings.private_key, algorithm="RS256"
-    )
-    return encoded_jwt
+    return jwt.encode(access_token_payload, settings.private_key, algorithm="RS256")
