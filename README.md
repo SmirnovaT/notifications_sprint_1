@@ -17,9 +17,9 @@ docker compose up --build -d
 6. cd notification_service
 7. uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
-____________________________________________________________________________
-Работа с RabbitMQ
-____________________________________________________________________________
+
+### Работа с RabbitMQ
+
 Запустить контейнер локально
 
 ```
@@ -30,3 +30,13 @@ docker run --rm -p 15672:15672 rabbitmq:3.10.7-management
 (login - guest, password - guest)
 ```
 http://127.0.0.1:15672/
+```
+
+### Запуск тестов
+
+Необходимо поменять в .env значение переменной RABBITMQ_HOST=test-rabbitmq
+```
+1. cd notification_service/src/tests
+2. docker-compose up --build
+3. poetry run pytest
+ ```
