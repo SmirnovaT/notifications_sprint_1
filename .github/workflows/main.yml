@@ -42,6 +42,7 @@ jobs:
 
 
       - name: Run flake8
+        id: flake8
         run: |
           cd notification_service
           poetry run flake8
@@ -116,4 +117,4 @@ jobs:
           
           Last commit: ${{ github.event.head_commit.sha}} ${{ github.event.head_commit.message}}
           
-          job finished successfully
+          result: ${{ steps.flake8.outputs.status }}
