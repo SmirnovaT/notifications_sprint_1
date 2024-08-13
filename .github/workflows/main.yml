@@ -112,4 +112,4 @@ jobs:
           
           Pipeline status: ${{ needs.build.result }}
           
-          result: ${{ steps.ping.output.status }}
+          result: ${{ steps.ping.outputs.status }}
