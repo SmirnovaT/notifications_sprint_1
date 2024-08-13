@@ -42,6 +42,7 @@ jobs:
 
 
       - name: Run flake8
+        id: flake8
         run: |
           cd notification_service
           poetry run flake8
@@ -112,4 +113,4 @@ jobs:
           
           Pipeline status: ${{ needs.build.result }}
           
-          result: ${{ steps.run_flake8.outputs.status }}
+          result: ${{ steps.flake8.outputs.status }}
