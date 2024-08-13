@@ -1,0 +1,8 @@
+services:
+  test-api:
+    ports:
+      - "8000:8000"
+
+  test-rabbitmq:
+    ports:
+      - "15672:15672"
