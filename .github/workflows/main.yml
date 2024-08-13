@@ -93,6 +93,8 @@ jobs:
           
           Pipeline status: ${{ needs.build.result }}
           
+          Last commit: ${{ github.event.head_commit.sha}} ${{ github.event.head_commit.message}}
+          
           job failed
 
     - name: Send telegram notification on success
@@ -111,5 +113,7 @@ jobs:
           https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}
           
           Pipeline status: ${{ needs.build.result }}
+          
+          Last commit: ${{ github.event.head_commit.sha}} ${{ github.event.head_commit.message}}
           
           job finished successfully
