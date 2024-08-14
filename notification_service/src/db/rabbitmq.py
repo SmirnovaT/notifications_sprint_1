@@ -8,7 +8,8 @@ channel: aiormq.Channel | None = None
 
 
 @backoff.on_exception(
-    backoff.expo(
+    backoff.expo,
+    (
         aiormq.exceptions.AMQPError,
         aiormq.exceptions.AMQPConnectionError,
         ConnectionError,
