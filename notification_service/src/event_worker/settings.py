@@ -1,23 +1,28 @@
 from pathlib import Path
 
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+class MongoDBSettings(BaseModel):
+    host: str = "localhost"
+    port: int = 5672
+    db_name: str = "notifications"
+    event_collection: str = "events"
+    notification_collection: str = "notifications"
+
+
 class Settings(BaseSettings):
-    """Главный класс настроек всего приложения"""
+    """Главный класс настроек event воркера"""
 
-    project_name: str = "notification_service"
-    app_port: int = 8000
-    notification_api_url: str
-
-    private_key: str
-    public_key: str
+    mongo: MongoDBSettings = MongoDBSettings()
 
     rabbitmq_username: str
     rabbitmq_password: str
     rabbitmq_queue_events: str
+    rabbitmq_queue_notifications: str
     rabbitmq_delivery_mode: int
     rabbitmq_host: str
     rabbitmq_port: int
