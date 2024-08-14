@@ -9,13 +9,12 @@ channel: aio_pika.abc.AbstractRobustChannel | None = None
 
 
 async def create_connection():
-    connection = await aio_pika.connect_robust(
+    return await aio_pika.connect_robust(
         host=settings.rabbitmq_host,
         port=settings.rabbitmq_port,
         login=settings.rabbitmq_username,
         password=settings.rabbitmq_password,
     )
-    return connection
 
 
 async def create_channel(

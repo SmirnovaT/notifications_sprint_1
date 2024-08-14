@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from logging import getLogger
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -14,6 +15,8 @@ from src.models.event import (
 )
 from src.models.profile import UserProfile
 from src.services.template import TemplateService
+
+logger = getLogger()
 
 
 class EventProcessor(ABC):
@@ -33,27 +36,27 @@ class EventProcessor(ABC):
 
     async def process(self, raw_event: dict) -> None:
         event = Event.model_validate(raw_event)
-        event = await self.save_event(event)
+        event = await self._save_event(event)
         await self.process_event(event)
 
     @abstractmethod
     async def process_event(self, event: Event) -> None:
         """
         Абстрактный метод обработки нотификационного события,
-        перегружается конретными обрабочиками
+        перегружается конретными обработчиками
         """
-        pass
 
-    async def send_notification(self, notification: NotificationDB):
+    async def _send_notification(self, notification: NotificationDB):
         """Сохранение нотификации в бд и отправка в очередь мгновенных"""
         try:
             result = await self.mongo[
                 settings.mongo.notification_collection
             ].insert_one(notification.model_dump())
-            notification_id = str(result.inserted_id)
         except Exception:
-            # обработать
+            logger.exception(f"error while saving notification to mongo {notification}")
             raise
+        else:
+            notification_id = str(result.inserted_id)
 
         if notification.send_date is None:
             queue_notification = NotificationQueue(
@@ -76,17 +79,18 @@ class EventProcessor(ABC):
         }
         return UserProfile.model_validate(mock_profile)
 
-    async def save_event(self, event: Event) -> Event:
+    async def _save_event(self, event: Event) -> Event:
         """Сохранение нотификационного события в бд"""
         try:
             result = await self.mongo[self.event_collection].insert_one(
                 event.model_dump(exclude={"id"})
             )
-            event.id = str(result.inserted_id)
-            return event
         except Exception:
-            # обработать
+            logger.exception(f"error while saving event to mongo {event}")
             raise
+
+        event.id = str(result.inserted_id)
+        return event
 
     async def _send_notification_to_queue(self, notification: NotificationQueue):
         try:
@@ -95,7 +99,9 @@ class EventProcessor(ABC):
                 queue_name=settings.rabbitmq_queue_notifications,
             )
         except Exception:
-            # TODO: обработать
+            logger.exception(
+                f"error while trying to send notification to rabbitmq {notification}"
+            )
             raise
 
 
@@ -135,7 +141,7 @@ class NewUserEvent(EventProcessor):
             event.type, notification_channel
         )
         message = self.temlate_service.render_template(template_str, context)
-        print(message)
+        logger.debug(message)
 
         # отправка данных в дб/очередь
         db_notification = NotificationDB(
@@ -146,4 +152,4 @@ class NewUserEvent(EventProcessor):
             # event_id=event_id,
             # user_id=user_id,
         )
-        await self.send_notification(db_notification)
+        await self._send_notification(db_notification)

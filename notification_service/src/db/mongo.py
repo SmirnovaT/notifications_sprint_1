@@ -9,6 +9,5 @@ def init_mongo():
     return AsyncIOMotorClient()
 
 
-def get_mongo_db():
-    # TODO: вынести в настройки
-    return mongo["notifications"]
+def get_mongo_db(db_name: str):
+    return mongo[db_name]

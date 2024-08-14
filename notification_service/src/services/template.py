@@ -10,9 +10,7 @@ class TemplateService:
         self.env = Environment(loader=self.loader)
 
     def get_template(self, event_type: EventsEnum, channel: ChannelEnum) -> Template:
-        template = self.env.get_template(f"{event_type}.html")
-        return template
+        return self.env.get_template(f"{event_type}.html")
 
     def render_template(self, template: Template, context: dict) -> str:
-        result = template.render(context)
-        return result
+        return template.render(context)

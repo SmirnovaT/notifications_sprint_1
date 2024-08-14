@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class MongoDBSettings(BaseModel):
     host: str = "localhost"
     port: int = 5672
+    db_name: str = "notifications"
     event_collection: str = "events"
     notification_collection: str = "notifications"
 
@@ -25,7 +26,6 @@ class Settings(BaseSettings):
     rabbitmq_delivery_mode: int
     rabbitmq_host: str
     rabbitmq_port: int
-    
 
     model_config = SettingsConfigDict(
         extra="ignore",
