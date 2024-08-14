@@ -38,7 +38,7 @@ async def init_queues(_channel: aiormq.abc.AbstractChannel) -> None:
     """Функция инициализирует очередь в RabbitMQ."""
 
     await _channel.queue_declare(
-        queue=settings.rabbitmq_queue_notifications, durable=True
+        queue=settings.rabbitmq_queue_events, durable=True
     )
     await _channel.basic_qos(prefetch_count=1, global_=True)
 

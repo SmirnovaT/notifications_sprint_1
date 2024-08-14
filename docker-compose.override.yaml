@@ -3,7 +3,11 @@ services:
     ports:
       - "8000:8000"
 
-
   rabbitmq:
     ports:
       - "15672:15672"
+      - "5672:5672"
+
+  mongodb:
+    ports:
+      - "27017:27017"
