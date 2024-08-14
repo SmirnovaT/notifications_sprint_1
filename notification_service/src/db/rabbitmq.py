@@ -1,4 +1,5 @@
 import aiormq
+import backoff
 
 from src.core.config import settings
 
@@ -6,6 +7,14 @@ connection: aiormq.Connection | None = None
 channel: aiormq.Channel | None = None
 
 
+@backoff.on_exception(
+    backoff.expo(
+        aiormq.exceptions.AMQPError,
+        aiormq.exceptions.AMQPConnectionError,
+        ConnectionError,
+    ),
+    max_tries=3,
+)
 async def create_connection_rabbitmq() -> aiormq.abc.AbstractConnection:
     """Создание соединения с RabbitMQ."""
 
