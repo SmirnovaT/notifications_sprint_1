@@ -1,4 +1,13 @@
 services:
+  event_worker:
+    build:
+      context: ./notification_service
+      dockerfile: ./Dockerfile.event_worker
+    restart: always
+    env_file:
+      - ./notification_service/.env
+    command: python -m src.event_worker.main
+
   app:
     build:
       context: ./notification_service
@@ -7,9 +16,10 @@ services:
       - ./notification_service/.env
     expose:
       - 8000
+    depends_on:
+      - rabbitmq
     networks:
       - notification
-
 
   rabbitmq:
     image: rabbitmq:3.10.7-management
@@ -17,12 +27,28 @@ services:
     restart: always
     environment:
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
-    depends_on:
-      - app
     networks:
       - notification
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    expose:
+      - 27017
+
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
 
 
 networks:
