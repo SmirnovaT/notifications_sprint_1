@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Request
 from starlette.responses import JSONResponse
 
 from src.services.notification import NotificationService
@@ -18,6 +18,7 @@ router = APIRouter(tags=["notification"])
 )
 async def notification(
     data: dict,
+    request: Request,
     service: NotificationService = Depends(NotificationService),
 ) -> JSONResponse:
-    return await service.send_event(data)
+    return await service.send_event(data, request)
