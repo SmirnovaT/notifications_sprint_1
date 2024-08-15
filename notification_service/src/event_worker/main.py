@@ -36,7 +36,7 @@ async def process_events(message: aio_pika.abc.AbstractIncomingMessage) -> None:
 
 
 async def main() -> None:
-    mongo.mongo = mongo.init_mongo()
+    mongo.mongo = mongo.init_mongo(host=settings.mongo.host, port=settings.mongo.port)
     rabbitmq.connection = await rabbitmq.create_connection()
     async with rabbitmq.connection:
         rabbitmq.channel = await rabbitmq.create_channel(rabbitmq.connection)

@@ -18,9 +18,7 @@ services:
       - 8000
     depends_on:
       - rabbitmq
-    networks:
-      - notification
-
+    
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
@@ -34,8 +32,6 @@ services:
       retries: 3
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
-    networks:
-      - notification
 
   mongodb:
     image: mongo:latest
@@ -51,5 +47,3 @@ volumes:
   mongodb_data:
 
 
-networks:
-  notification:
