@@ -8,7 +8,7 @@ from airflow.decorators import dag, task
 
 
 @dag(
-    schedule=@hourly,
+    schedule= "@hourly",
     start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
     catchup=False,
     tags=["example"],
