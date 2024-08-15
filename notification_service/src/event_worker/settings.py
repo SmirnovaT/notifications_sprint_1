@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class MongoDBSettings(BaseModel):
     host: str = "localhost"
-    port: int = 5672
+    port: int = 27017
     db_name: str = "notifications"
     event_collection: str = "events"
     notification_collection: str = "notifications"
