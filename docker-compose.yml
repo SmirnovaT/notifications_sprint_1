@@ -43,6 +43,9 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+include:
+    - ./airflow/docker-compose.yaml
+
 volumes:
   mongodb_data:
 
