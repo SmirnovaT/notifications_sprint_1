@@ -61,8 +61,8 @@ async def validate_token(token: str) -> dict:
     except jwt.exceptions.DecodeError as decode_error:
         notification_logger.error(f"Error while JWT decoding: {decode_error}")
         raise HTTPException(
-            status_code=HTTPStatus.UNAUTHORIZED,
-            detail="Access token is invalid",
+            status_code=418,#HTTPStatus.UNAUTHORIZED,
+            detail="Access token is very invalid",
         )
     except jwt.ExpiredSignatureError:
         notification_logger.error("Token expires")
