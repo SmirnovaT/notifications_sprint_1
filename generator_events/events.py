@@ -63,7 +63,7 @@ def generate_new_registration() -> [dict, str]:
         {
             "type": "new_user",
             "data": {"user_id": str(uuid.uuid4()), "url": fake.text(10)},
-            "send_date": None,
+            "send_date": generate_send_date(),
         }
     )
 
@@ -78,10 +78,9 @@ def generate_all_users_event() -> [dict, str]:
     event_data.update(
         {
             "type": "news",
-            "data": {"message": fake.text(50), "send_date": generate_send_date()},
+            "data": {"message": fake.text(50), "send_date": None},
         }
     )
-
     access_token, _ = create_access_and_refresh_tokens(ServiceEnum.SCHEDULER)
     return event_data, access_token
 

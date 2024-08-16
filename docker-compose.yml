@@ -8,6 +8,17 @@ services:
       - ./notification_service/.env
     command: python -m src.event_worker.main
 
+
+  scheduler_worker:
+    build:
+      context: ./scheduler_worker
+      dockerfile: ./Dockerfile.scheduler_worker
+    restart: always
+    env_file:
+      ./scheduler_worker/.env
+    command: python -m ./scheduler_worker/main
+
+
   app:
     build:
       context: ./notification_service
@@ -40,8 +51,13 @@ services:
     expose:
       - 27017
 
+
+
     volumes:
       - mongodb_data:/data/db
+
+include:
+    - ./airflow/docker-compose.yaml
 
 volumes:
   mongodb_data:
