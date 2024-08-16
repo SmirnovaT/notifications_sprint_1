@@ -14,15 +14,20 @@ jobs:
       matrix:
         python-version: [ "3.8", "3.9", "3.10", "3.11"]
 
+    outputs:
+      output_1: ${{ steps.gen_output.outputs.output_1 }}
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
+        id: set_python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
 
       - name: Install Poetry
+        id: poetry
         run: |
           cd notification_service
           python -m pip install --upgrade pip
@@ -31,17 +36,20 @@ jobs:
 
 
       - name: Create folder for report
+        id: create_folder
         run: |
           mkdir -p reports/wemake-python-styleguide/
           mkdir -p reports/mypy/
 
 
       - name: Run mypy
+        id: mypy
         run: |
           poetry run mypy --ignore-missing-imports . --html-report reports/mypy/ || true
 
 
       - name: Run flake8
+        id: flake8
         run: |
           cd notification_service
           poetry run flake8
@@ -61,22 +69,20 @@ jobs:
           echo "DEFAULT_PORT=${{ secrets.DEFAULT_PORT }}" >> .env
           echo "MONGO__URL=${{ secrets.MONGO__URL }}" >> .env
 
-
-      #- name: Run tests
-      #  run: |
-       #   cd tests && docker-compose up -d
-
-     # - name: Stop containers
-     #   run: |
-     #     cd tests && docker-compose down
+      - name: Output
+        id: gen_output
+        run: |
+          echo "${{ steps }}"
 
   notification:
     name: Telegram Notification
     runs-on: ubuntu-latest
     continue-on-error: true
+    if: always()
     needs: build
     steps:
-    - name: Send telegram notification
+    - name: Send telegram notification on failure
+      if:  failure()
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO }}
@@ -91,3 +97,27 @@ jobs:
           https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}
           
           Pipeline status: ${{ needs.build.result }}
+          
+          Last commit: ${{ github.event.pull_request.head.sha}} ${{ github.event.pull_request.head_commit.message}}
+          
+          result: ${{ toJSON(needs.build.steps.flake8.outputs) }}
+
+    - name: Send telegram notification on success
+      if:  success()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          ${{ github.repository }}:
+          Amazing ${{ github.actor }}😎 
+          Сreate new Pull Request 🔥
+
+          Please review the changes and check the code: 
+
+          https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+          
+          Pipeline status: ${{ needs.build.result }}
+          
+          Last commit: 
+          https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha}} 
