@@ -6,6 +6,7 @@ import httpx
 import pendulum
 
 from airflow.decorators import dag, task
+from airflow.models import Variable
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import jwt_add
@@ -35,7 +36,7 @@ def send_news():
                    cookies={"access_token": jwt_add.create_access_token()}
                    )
 
-    raw_json = {"film_id": None}
+    raw_json = {"message": Variable.get("message"), "send_date": Variable.get("send_date")}
     prepare_email(raw_json)
 
 
