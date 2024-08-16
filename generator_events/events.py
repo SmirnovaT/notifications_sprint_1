@@ -63,7 +63,7 @@ def generate_new_registration() -> [dict, str]:
         {
             "type": "new_user",
             "data": {"user_id": str(uuid.uuid4()), "url": fake.text(10)},
-            "send_date": None,
+            "send_date": generate_send_date(),
         }
     )
 

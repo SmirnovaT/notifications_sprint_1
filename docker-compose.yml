@@ -40,6 +40,16 @@ services:
     expose:
       - 27017
 
+
+  scheduler_worker:
+    build:
+      context: ./scheduler_worker
+      dockerfile: ./Dockerfile.scheduler_worker
+    restart: always
+    env_file:
+      - ./notification_service/.env
+    command: python -m main.py
+
     volumes:
       - mongodb_data:/data/db
 
