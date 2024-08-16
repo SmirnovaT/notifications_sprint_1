@@ -75,7 +75,6 @@ jobs:
     name: Telegram Notification
     runs-on: ubuntu-latest
     continue-on-error: true
-    needs: build
     steps:
     - name: Send telegram notification on failure
       if:  failure()
