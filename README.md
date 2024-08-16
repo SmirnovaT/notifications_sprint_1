@@ -40,3 +40,10 @@ http://127.0.0.1:15672/
 2. docker-compose up --build
 3. poetry run pytest
  ```
+### Настройка регулярных оповещений в Airflow
+
+```
+Логин: airflow
+пароль: airflow
+
+```

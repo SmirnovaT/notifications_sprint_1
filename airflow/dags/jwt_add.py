@@ -2,14 +2,15 @@ import calendar
 import datetime as dt
 import logging
 from datetime import datetime, timedelta
-from enum import StrEnum, auto
+import os
+from dotenv import load_dotenv
 from typing import Tuple
 
 import jwt
-from airflow.models import Variable
 
-class ServiceEnum(StrEnum):
-    SCHEDULER = auto()
+
+load_dotenv()
+PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 
 def calculate_current_date_and_time() -> Tuple[dt, int]:
     """Calculates current date and time"""
@@ -29,7 +30,7 @@ def calculate_iat_and_exp_tokens() -> Tuple[int, int, int]:
         calculate_current_date_and_time()
     )
 
-    exp_access_token = current_date_and_time_datetime + timedelta(minutes=15)
+    exp_access_token = current_date_and_time_datetime + timedelta(days=1)
     exp_refresh_token = current_date_and_time_datetime + timedelta(days=10)
 
     exp_access_token_timestamp = int(calendar.timegm(exp_access_token.timetuple()))
@@ -46,7 +47,7 @@ def create_access_token() -> str:
 
     access_token_payload = {
         "iss": "Auth service",
-        "service_name": "SCHEDULER",
+        "service_name": "scheduler",
         "type": "access",
         "exp": exp_access_token,
         "iat": iat,
@@ -55,7 +56,7 @@ def create_access_token() -> str:
     try:
         encoded_access_token: str = jwt.encode(
             access_token_payload,
-            Variable.get("private_key"),
+            PRIVATE_KEY,
             algorithm="RS256",
             headers=headers,
         )
