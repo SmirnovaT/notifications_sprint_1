@@ -55,7 +55,7 @@ def create_access_token() -> str:
     try:
         encoded_access_token: str = jwt.encode(
             access_token_payload,
-            Variable.get("PRIVATE_KEY"),
+            Variable.get("private_key"),
             algorithm="RS256",
             headers=headers,
         )
