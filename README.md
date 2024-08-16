@@ -40,3 +40,16 @@ http://127.0.0.1:15672/
 2. docker-compose up --build
 3. poetry run pytest
  ```
+### Настройка регулярных оповещений в Airflow
+
+```
+1. переименуйте .env.example в .env
+2. Авторизуйтесь в интерфейсе airflow http://localhost:8080
+	Логин: airflow
+	пароль: airflow
+3. В переменных задайте желаемое сообщение и дату доставки рассылки.
+4. Запустите DAG "send news"
+
+
+
+```
