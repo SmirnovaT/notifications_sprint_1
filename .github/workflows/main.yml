@@ -14,15 +14,20 @@ jobs:
       matrix:
         python-version: [ "3.8", "3.9", "3.10", "3.11"]
 
+    outputs:
+      output_1: ${{ steps.gen_output.outputs.output_1 }}
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
+        id: set_python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
 
       - name: Install Poetry
+        id: poetry
         run: |
           cd notification_service
           python -m pip install --upgrade pip
@@ -31,12 +36,14 @@ jobs:
 
 
       - name: Create folder for report
+        id: create_folder
         run: |
           mkdir -p reports/wemake-python-styleguide/
           mkdir -p reports/mypy/
 
 
       - name: Run mypy
+        id: mypy
         run: |
           poetry run mypy --ignore-missing-imports . --html-report reports/mypy/ || true
 
@@ -62,20 +69,16 @@ jobs:
           echo "DEFAULT_PORT=${{ secrets.DEFAULT_PORT }}" >> .env
           echo "MONGO__URL=${{ secrets.MONGO__URL }}" >> .env
 
-
-      #- name: Run tests
-      #  run: |
-       #   cd tests && docker-compose up -d
-
-     # - name: Stop containers
-     #   run: |
-     #     cd tests && docker-compose down
+      - name: Output
+        id: gen_output
+        run: |
+          echo "${{ steps }}"
 
   notification:
     name: Telegram Notification
     runs-on: ubuntu-latest
     continue-on-error: true
-    if: always
+    if: always()
     needs: build
     steps:
     - name: Send telegram notification on failure
@@ -95,9 +98,9 @@ jobs:
           
           Pipeline status: ${{ needs.build.result }}
           
-          Last commit: ${{ github.event.head_commit.sha}} ${{ github.event.head_commit.message}}
+          Last commit: ${{ github.event.pull_request.head.sha}} ${{ github.event.pull_request.head_commit.message}}
           
-          job failed
+          result: ${{ toJSON(needs.build.steps.flake8.outputs) }}
 
     - name: Send telegram notification on success
       if:  success()
@@ -116,6 +119,5 @@ jobs:
           
           Pipeline status: ${{ needs.build.result }}
           
-          Last commit: ${{ github.event.head_commit.sha}} ${{ github.event.head_commit.message}}
-          
-          result: ${{ steps.flake8.outputs.status }}
+          Last commit: 
+          https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha}} 
