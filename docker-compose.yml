@@ -79,8 +79,8 @@ services:
     image: mailhog/mailhog
     restart: always
 
-# include:
-#   - ./airflow/docker-compose.yaml
+include:
+  - ./airflow/docker-compose.yaml
 
 volumes:
   mongodb_data:
