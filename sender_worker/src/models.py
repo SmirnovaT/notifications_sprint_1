@@ -29,6 +29,7 @@ class Event(BaseModel):
     type: EventsEnum
     event_date: datetime
     send_date: datetime | None = None
+    request_id: str | None = None
 
     # urgent: bool = False
 
@@ -41,9 +42,8 @@ class NewUserEventData(BaseModel):
 class NotificationDB(BaseModel):
     message: str
     channel: ChannelEnum
-    data: dict
     send_date: datetime | None = None
-    updated_at: datetime | None = None
+    updated_at: datetime| None = None
 
     # TODO: убрать или доделать валидацию/важность
     # event_id: str
@@ -55,9 +55,13 @@ class NotificationDB(BaseModel):
     retry_count: int = 0
 
 
-class NotificationEmailData(BaseModel):
+class EmailData(BaseModel):
     email: str
     subject: str
+
+
+class WebsocketData(BaseModel):
+    recipients: str
 
 
 class NotificationQueue(BaseModel):

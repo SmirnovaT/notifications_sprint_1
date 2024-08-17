@@ -22,6 +22,13 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  sender_worker:
+    build:
+      context: ./sender_worker
+    restart: always
+    env_file:
+      - ./sender_worker/.env
+
   app:
     build:
       context: ./notification_service
@@ -58,8 +65,12 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-# include:
-#     - ./airflow/docker-compose.yaml
+  mailhog:
+    image: mailhog/mailhog
+    restart: always
+
+include:
+  - ./airflow/docker-compose.yaml
 
 volumes:
   mongodb_data:

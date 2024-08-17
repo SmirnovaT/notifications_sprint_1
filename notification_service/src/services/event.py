@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from logging import getLogger
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -11,6 +12,7 @@ from src.models.event import (
     Event,
     EventsEnum,
     NotificationDB,
+    NotificationEmailData,
     NotificationQueue,
 )
 from src.models.profile import UserProfile
@@ -141,11 +143,16 @@ class NewUserEvent(EventProcessor):
         message = self.temlate_service.render_template(template_str, context)
         logger.debug(message)
 
+        send_data = NotificationEmailData(
+            email=user_email, subject="Online Cinema подтверждение регистрации"
+        )
+
         # отправка данных в дб/очередь
         db_notification = NotificationDB(
             message=message,
             channel=notification_channel,
-            data={"email": user_email},
             send_date=event.send_date,
+            data=send_data.model_dump(),
+            updated_at=datetime.now(tz=timezone.utc),
         )
         await self._send_notification(db_notification)
