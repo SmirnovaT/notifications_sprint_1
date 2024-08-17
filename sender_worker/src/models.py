@@ -43,7 +43,7 @@ class NotificationDB(BaseModel):
     message: str
     channel: ChannelEnum
     send_date: datetime | None = None
-    updated_at: datetime| None = None
+    updated_at: datetime | None = None
 
     # TODO: убрать или доделать валидацию/важность
     # event_id: str

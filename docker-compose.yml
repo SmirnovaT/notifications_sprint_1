@@ -28,6 +28,9 @@ services:
     restart: always
     env_file:
       - ./sender_worker/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   app:
     build:

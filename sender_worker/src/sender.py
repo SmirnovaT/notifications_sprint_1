@@ -1,20 +1,19 @@
 import smtplib
-import time
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from logging import getLogger
 
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime, timezone
 
 from config import settings
 from models import (
     ChannelEnum,
     EmailData,
+    NotificationDB,
     NotificationQueue,
     NotificationStatusEnum,
-    NotificationDB,
 )
 
 logger = getLogger()
@@ -76,7 +75,8 @@ class BaseSender(ABC):
         if retry_count >= settings.notification_retry_limit:
             notification_db.status = NotificationStatusEnum.FAILED
             logger.info(
-                f"retry count for notification {notification_db} exceeded limit, setting as {NotificationStatusEnum.FAILED}"
+                f"retry count for notification {notification_db} exceeded limit,"
+                "setting as {NotificationStatusEnum.FAILED}"
             )
         try:
             await self.mongo[self.notification_collection].replace_one(
