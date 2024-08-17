@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class ChannelEnum(StrEnum):
     EMAIL = "email"
-    WEBSOCKET = "websoket"
+    WEBSOCKET = "websocket"
 
 
 class NotificationQueue(BaseModel):
