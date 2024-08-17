@@ -20,7 +20,7 @@ def generate_event() -> dict:
     }
 
 
-def generate_new_like_for_review() -> [dict, str]:
+def generate_new_like_for_review() -> tuple[dict, str]:
     """Добавление нового лайка для ревью"""
 
     event_data = generate_event()
@@ -41,21 +41,25 @@ def generate_new_like_for_review() -> [dict, str]:
     return event_data, access_token
 
 
-def generate_new_series() -> [dict, str]:
+def generate_new_series() -> tuple[dict, str]:
     """Добавление новой серии сериала"""
 
     event_data = generate_event()
     event_data.update(
         {
             "type": "series",
-            "data": {"film_id": str(uuid.uuid4()), "send_date": generate_send_date()},
+            "data": {
+                "filmwork_id": str(uuid.uuid4()),
+                "episode_id": str(uuid.uuid4()),
+                "send_date": generate_send_date(),
+            },
         }
     )
     access_token, _ = create_access_and_refresh_tokens(ServiceEnum.ADMIN_PANEL)
     return event_data, access_token
 
 
-def generate_new_registration() -> [dict, str]:
+def generate_new_registration() -> tuple[dict, str]:
     """Регистрация нового пользователя"""
 
     event_data = generate_event()
@@ -71,7 +75,7 @@ def generate_new_registration() -> [dict, str]:
     return event_data, access_token
 
 
-def generate_all_users_event() -> [dict, str]:
+def generate_all_users_event() -> tuple[dict, str]:
     """Добавление оповещения всех пользователей"""
 
     event_data = generate_event()

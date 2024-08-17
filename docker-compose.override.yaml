@@ -2,6 +2,10 @@ services:
   app:
     ports:
       - "8000:8000"
+  
+  mock_api:
+    ports:
+      - "8001:8000"
 
   rabbitmq:
     ports:

@@ -27,6 +27,18 @@ class Settings(BaseSettings):
     rabbitmq_host: str
     rabbitmq_port: int
 
+    nighttime_start_hour: int = 22
+    nighttime_end_hour: int = 7
+
+    profile_service_host: str = "localhost"
+    profile_service_port: int = 8001
+
+    content_service_host: str = "localhost"
+    content_service_port: int = 8001
+
+    ugc_service_host: str = "localhost"
+    ugc_service_port: int = 8001
+
     model_config = SettingsConfigDict(
         extra="ignore",
         env_file=Path(__file__).resolve().parent.parent.parent / ".env",
