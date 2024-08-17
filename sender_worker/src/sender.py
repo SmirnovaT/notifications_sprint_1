@@ -162,4 +162,5 @@ class WebsockerSender(BaseSender):
 
     async def send_notification(self, raw_notification: dict) -> None:
         notification = NotificationQueue.model_validate(raw_notification)
+        await self.set_success(notification.notification_id)
         logger.info(f"sent message to websocket {notification.message}")
