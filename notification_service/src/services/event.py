@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from logging import getLogger
 
+import httpx
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 # TODO: использовать из db, переписать его на aio-pika?
@@ -30,11 +31,31 @@ class EventProcessor(ABC):
         template_service: TemplateService,
         event_collection: str,
         notification_collection: str,
+        profile_service_host: str,
+        profile_service_port: int,
     ) -> None:
         self.mongo = mongo_db
         self.event_collection = event_collection
         self.notification_collection = notification_collection
         self.temlate_service = template_service
+        self.profile_service_url = (
+            f"http://{profile_service_host}:{profile_service_port}"
+        )
+
+    async def setup(self):
+        self.profile_service_client = httpx.AsyncClient()
+
+    async def cleanup(self):
+        await self.profile_service_client.aclose()
+
+    async def __aenter__(self):
+        await self.setup()
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        await self.cleanup()
+        if exc_type:
+            return False
 
     async def process(self, raw_event: dict) -> None:
         event = Event.model_validate(raw_event)
@@ -59,6 +80,7 @@ class EventProcessor(ABC):
             raise
         else:
             notification_id = str(result.inserted_id)
+            logger.info(f"saved new notification to db {notification}")
 
         if notification.send_date is None:
             queue_notification = NotificationQueue(
@@ -70,14 +92,16 @@ class EventProcessor(ABC):
             await self._send_notification_to_queue(queue_notification)
 
     async def _get_user_profile(self, user_id: str) -> UserProfile:
-        """Мок получения пользователькой информации"""
-        mock_profile = {
-            "email": "some@mail.ru",
-            "fullname": "Иванов Иван Иванович",
-            "notification_settings": {"email": True, "websockets": True},
-            "timezone": "Europe/Moscow",
-        }
-        return UserProfile.model_validate(mock_profile)
+        """Получения пользователькой информации"""
+        url = f"{self.profile_service_url}/api/v1/profile/{user_id}"
+        try:
+            response = await self.profile_service_client.get(url)
+            response.raise_for_status()
+        except httpx.HTTPError:
+            logger.exception(f"failed to get user profile {user_id}")
+            raise
+        data = response.json()
+        return UserProfile.model_validate(data)
 
     async def _save_event(self, event: Event) -> Event:
         """Сохранение нотификационного события в бд"""
@@ -103,6 +127,8 @@ class EventProcessor(ABC):
                 f"error while trying to send notification to rabbitmq {notification}"
             )
             raise
+        else:
+            logger.info(f"sent new notification to queue {notification}")
 
 
 # Реестр обработчиков событий, чтобы не делать if/else

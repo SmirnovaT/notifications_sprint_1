@@ -24,13 +24,16 @@ async def process_events(message: aio_pika.abc.AbstractIncomingMessage) -> None:
         logger.debug(" [x] Received message %r" % message)
         logger.info("Message body is: %r" % message.body)
         event = json.loads(message.body.decode(encoding="utf-8"))
-        if processor := EVENT_PROCESSOR_REGISTRY.get(event["type"]):
-            await processor(
+        if handler_cls := EVENT_PROCESSOR_REGISTRY.get(event["type"]):
+            async with handler_cls(
                 mongo_db=mongo_db,
                 template_service=template_service,
                 event_collection=settings.mongo.event_collection,
                 notification_collection=settings.mongo.notification_collection,
-            ).process(event)
+                profile_service_host=settings.profile_service_host,
+                profile_service_port=settings.profile_service_port,
+            ) as handler:
+                await handler.process(event)
         else:
             logger.error("обработчик события не зарегистрирован")
 

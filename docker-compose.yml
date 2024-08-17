@@ -44,6 +44,13 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  mock_api:
+    build:
+      context: ./mock_api
+    restart: always
+    expose:
+      - 8000
+
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
@@ -72,8 +79,8 @@ services:
     image: mailhog/mailhog
     restart: always
 
-include:
-  - ./airflow/docker-compose.yaml
+# include:
+#   - ./airflow/docker-compose.yaml
 
 volumes:
   mongodb_data:

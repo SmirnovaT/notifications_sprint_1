@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     rabbitmq_host: str
     rabbitmq_port: int
 
+    profile_service_host: str = "localhost"
+    profile_service_port: int = 8001
+
     model_config = SettingsConfigDict(
         extra="ignore",
         env_file=Path(__file__).resolve().parent.parent.parent / ".env",
