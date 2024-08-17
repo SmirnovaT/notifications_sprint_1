@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 class ChannelEnum(StrEnum):
     EMAIL = "email"
-    WEBSOCKET = "websoket"
+    WEBSOCKET = "websocket"
 
 
 class EventsEnum(StrEnum):
@@ -45,12 +45,6 @@ class NotificationDB(BaseModel):
     send_date: datetime | None = None
     updated_at: datetime | None = None
 
-    # TODO: убрать или доделать валидацию/важность
-    # event_id: str
-    # user_id: str
-    # urgent: bool = False
-    # event_date: datetime
-
     status: NotificationStatusEnum = NotificationStatusEnum.UNSENT
     retry_count: int = 0
 
@@ -70,8 +64,3 @@ class NotificationQueue(BaseModel):
     data: dict
 
     notification_id: str
-
-    # TODO: убрать или доделать валидацию/важность
-    # event_id: str
-    # user_id: str
-    # urgent: bool = False
