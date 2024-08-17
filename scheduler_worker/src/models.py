@@ -11,6 +11,6 @@ class ChannelEnum(StrEnum):
 class NotificationQueue(BaseModel):
     message: str
     channel: ChannelEnum
-    recipient: str
+    data: dict
 
     notification_id: str

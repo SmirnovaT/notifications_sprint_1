@@ -12,7 +12,7 @@ class SendNotificationService:
             queue_notification = NotificationQueue(
                 message=document["message"],
                 channel=document["channel"],
-                recipient=document["recipient"],
+                data=document["data"],
                 notification_id=str(document["_id"]),
             )
             notification_dict = queue_notification.model_dump()
@@ -22,7 +22,9 @@ class SendNotificationService:
                     scheduler_settings.rabbitmq_queue_notifications,
                     channel,
                 )
-                scheduler_logger.info(f"Уведомление успешно отправлено в очередь")
+                scheduler_logger.info(
+                    f"Уведомление успешно отправлено в очередь {notification_dict}"
+                )
             except Exception as e:
                 scheduler_logger.error(
                     f"Ошибка {e} при отправке уведомления {queue_notification}"
