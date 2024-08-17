@@ -10,11 +10,11 @@ ENV POETRY_VIRTUALENVS_CREATE 0
 ENV POETRY_NO_INTERACTION 1
 
 
-COPY poetry.lock pyproject.toml /opt/app/
+RUN  pip install --upgrade pip && pip install poetry==1.8.3
 
-RUN apt update
-RUN pip install poetry
-RUN poetry config virtualenvs.create false && poetry install
+COPY pyproject.toml poetry.lock ./
+
+RUN poetry install
 
 COPY . .
 

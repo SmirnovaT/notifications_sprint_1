@@ -4,12 +4,14 @@ version = "0.1.0"
 description = ""
 authors = ["SmirnovaT <tanya2.93@mail.ru>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
 aio-pika = "^9.4.3"
 motor = "^3.5.1"
 pydantic-settings = "^2.4.0"
+backoff = "^2.2.1"
 
 
 [build-system]
