@@ -2,7 +2,7 @@ services:
   app:
     ports:
       - "8000:8000"
-  
+
   mock_api:
     ports:
       - "8001:8000"
@@ -20,6 +20,10 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  airflow-webserver:
+    ports:
+      - "8080:8080"
 
   nginx:
     ports:
