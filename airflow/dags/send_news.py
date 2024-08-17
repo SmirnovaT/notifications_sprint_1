@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import jwt_add
 
 @dag(
-    schedule= "@hourly",
+    schedule= "@daily",
     start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
     catchup=False,
     tags=["example"],
