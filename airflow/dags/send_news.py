@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import jwt_add
 
 @dag(
-    schedule= "@hourly",
+    schedule= "@daily",
     start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
     catchup=False,
     tags=["example"],
@@ -31,7 +31,7 @@ def send_news():
             "event_date": pendulum.now('UTC'),
             "send_date": None,
         }
-        httpx.post('http://app:8000/api/v1/notification/',
+        httpx.post('http://nginx:80/api/v1/notification/',
                    data= data,
                    cookies={"access_token": jwt_add.create_access_token()}
                    )
