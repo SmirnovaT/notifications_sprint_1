@@ -31,7 +31,7 @@ def send_news():
             "event_date": pendulum.now('UTC'),
             "send_date": None,
         }
-        httpx.post('http://app:8000/api/v1/notification/',
+        httpx.post('http://nginx:80/api/v1/notification/',
                    data= data,
                    cookies={"access_token": jwt_add.create_access_token()}
                    )
