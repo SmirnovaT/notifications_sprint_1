@@ -38,7 +38,7 @@ class NewUserEventData(BaseModel):
 class NotificationDB(BaseModel):
     message: str
     channel: ChannelEnum
-    recipient: str
+    data: dict
     send_date: datetime | None = None
 
     # TODO: убрать или доделать валидацию/важность
@@ -54,7 +54,7 @@ class NotificationDB(BaseModel):
 class NotificationQueue(BaseModel):
     message: str
     channel: ChannelEnum
-    recipient: str
+    data: dict
 
     notification_id: str
 

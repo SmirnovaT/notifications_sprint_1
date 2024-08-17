@@ -81,7 +81,6 @@ def generate_all_users_event() -> [dict, str]:
             "data": {"message": fake.text(50), "send_date": generate_send_date()},
         }
     )
-
     access_token, _ = create_access_and_refresh_tokens(ServiceEnum.SCHEDULER)
     return event_data, access_token
 

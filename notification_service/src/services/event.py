@@ -62,10 +62,8 @@ class EventProcessor(ABC):
             queue_notification = NotificationQueue(
                 message=notification.message,
                 channel=notification.channel,
-                recipient=notification.recipient,
+                data=notification.data,
                 notification_id=notification_id,
-                # event_id=event_id,
-                # user_id=user_id,
             )
             await self._send_notification_to_queue(queue_notification)
 
@@ -147,9 +145,7 @@ class NewUserEvent(EventProcessor):
         db_notification = NotificationDB(
             message=message,
             channel=notification_channel,
-            recipient=user_email,
+            data={"email": user_email},
             send_date=event.send_date,
-            # event_id=event_id,
-            # user_id=user_id,
         )
         await self._send_notification(db_notification)
