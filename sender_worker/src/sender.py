@@ -1,3 +1,4 @@
+import asyncio
 import smtplib
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
@@ -115,11 +116,11 @@ class EmailSender(BaseSender):
     ) -> None:
         super().__init__(mongo_db, event_collection, notification_collection)
 
-        self.smtp_server: smtplib.SMTP = self.smtp_connection()
         self.smtp_host = settings.email.host
         self.smtp_port = settings.email.port
         self.username = settings.email.username
         self.password = settings.email.password
+        self.smtp_server: smtplib.SMTP = self.smtp_connection()
 
     def smtp_connection(self) -> smtplib.SMTP:
         smtp_server = smtplib.SMTP(self.smtp_host, self.smtp_port)
@@ -128,7 +129,7 @@ class EmailSender(BaseSender):
         smtp_server.login(self.username, self.password)
         return smtp_server
 
-    def send_email(self, message: str, email_data: EmailData):
+    def send_email_sync(self, message: str, email_data: EmailData):
         msg = EmailMessage()
         from_email = settings.email.sender_address
         to_email = email_data.email
@@ -137,19 +138,24 @@ class EmailSender(BaseSender):
         msg["To"] = ",".join([to_email])
         msg["Subject"] = email_data.subject
         msg.add_alternative(message, subtype="html")
-        self.smtp_server.sendmail(from_email, [to_email], msg.as_string())
+        try:
+            self.smtp_server.sendmail(from_email, [to_email], msg.as_string())
+        except smtplib.SMTPServerDisconnected:
+            # пробуем еще раз с передполключением если долгоживующее smtp подключение
+            # было разорвано,все остальные проблемы отправки будут обработаны механизмом
+            # переотправки уведомлений в schedule_worker сервисе
+            if self.smtp_server:
+                self.smtp_server.quit()
+            self.smtp_server = self.smtp_connection()
+            self.smtp_server.sendmail(from_email, [to_email], msg.as_string())
+
+    async def send_email(self, message: str, email_data: EmailData) -> None:
+        await asyncio.to_thread(self.send_email_sync, message, email_data)
 
     async def process(self, notification: NotificationQueue) -> None:
         email_data = EmailData.model_validate(notification.data)
-
         try:
-            try:
-                self.send_email(notification.message, email_data)
-            except smtplib.SMTPServerDisconnected:
-                if self.smtp_server:
-                    self.smtp_server.quit()
-                self.smtp_server = self.smtp_connection()
-                self.send_email(notification.message, email_data)
+            await self.send_email(notification.message, email_data)
         except smtplib.SMTPException:
             await self.proccess_retry(notification.notification_id)
         else:
