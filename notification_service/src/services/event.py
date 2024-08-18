@@ -76,7 +76,7 @@ class BaseEventHandler(ABC):
         перегружается конретными обработчиками
         """
 
-    async def _send_notification(self, notification: NotificationDB):
+    async def _send_notification(self, notification: NotificationDB) -> None:
         """Сохранение нотификации в бд и отправка в очередь мгновенных"""
         try:
             result = await self.mongo[
@@ -148,7 +148,9 @@ class BaseEventHandler(ABC):
         event.id = str(result.inserted_id)
         return event
 
-    async def _send_notification_to_queue(self, notification: NotificationQueue):
+    async def _send_notification_to_queue(
+        self, notification: NotificationQueue
+    ) -> None:
         try:
             await send_message(
                 notification.model_dump(),

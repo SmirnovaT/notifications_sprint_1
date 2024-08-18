@@ -8,7 +8,7 @@ connection: aio_pika.abc.AbstractRobustConnection | None = None
 channel: aio_pika.abc.AbstractRobustChannel | None = None
 
 
-async def create_connection():
+async def create_connection() -> aio_pika.abc.AbstractRobustConnection:
     return await aio_pika.connect_robust(
         host=settings.rabbitmq_host,
         port=settings.rabbitmq_port,
@@ -25,7 +25,7 @@ async def create_channel(
     return channel
 
 
-async def send_message(data: dict, queue_name: str):
+async def send_message(data: dict, queue_name: str) -> None:
     message_body = json.dumps(data).encode("utf-8")
 
     message = Message(

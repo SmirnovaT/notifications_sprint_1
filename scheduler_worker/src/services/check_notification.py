@@ -15,7 +15,7 @@ class CheckNotificationService:
 
     async def check_notification(self) -> AsyncIOMotorCursor[Mapping[str, Any] | Any]:
         """Функция забирающая нотификации, которые пора отправить в очередь
-        (со статусом unsent и send_date меньше текущего времени)."""
+        (со статусом unsent и send_date меньше текущего времени, либо None)."""
 
         return self.mongo[self.notification_collection].find(
             {
