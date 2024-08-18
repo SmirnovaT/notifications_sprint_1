@@ -39,7 +39,6 @@ def send_news():
                    json = data,
                    cookies={"access_token": jwt_add.create_access_token(PRIVATE_KEY)}
                    )
-        print(response.text)
 
     raw_json = {"message": Variable.get("message"), "send_date": Variable.get("send_date")}
     prepare_email(raw_json)
