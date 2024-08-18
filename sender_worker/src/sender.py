@@ -129,14 +129,14 @@ class EmailSender(BaseSender):
 
     def send_email(self, message: str, email_data: EmailData):
         msg = EmailMessage()
-        FROM_EMAIL = settings.email.sender_address
-        TO_EMAIL = email_data.email
+        from_email = settings.email.sender_address
+        to_email = email_data.email
 
-        msg["From"] = FROM_EMAIL
-        msg["To"] = ",".join([TO_EMAIL])
+        msg["From"] = from_email
+        msg["To"] = ",".join([to_email])
         msg["Subject"] = email_data.subject
         msg.add_alternative(message, subtype="html")
-        self.smtp_server.sendmail(FROM_EMAIL, [TO_EMAIL], msg.as_string())
+        self.smtp_server.sendmail(from_email, [to_email], msg.as_string())
 
     async def process(self, notification: NotificationQueue) -> None:
         email_data = EmailData.model_validate(notification.data)
