@@ -114,18 +114,18 @@ class EmailSender(BaseSender):
     ) -> None:
         super().__init__(mongo_db, event_collection, notification_collection)
 
+        self.smtp_server: smtplib.SMTP = self.smtp_connection()
         self.smtp_host = settings.email.host
         self.smtp_port = settings.email.port
         self.username = settings.email.username
         self.password = settings.email.password
-        self.connect_to_smtp()
 
-    def connect_to_smtp(self):
+    def smtp_connection(self) -> smtplib.SMTP:
         smtp_server = smtplib.SMTP(self.smtp_host, self.smtp_port)
         # mailhog не поддерживает TLS
         # smtp_server.starttls()
         smtp_server.login(self.username, self.password)
-        self.smtp_server = smtp_server
+        return smtp_server
 
     def send_email(self, message: str, email_data: EmailData):
         msg = EmailMessage()
@@ -147,7 +147,7 @@ class EmailSender(BaseSender):
             except smtplib.SMTPServerDisconnected:
                 if self.smtp_server:
                     self.smtp_server.quit()
-                self.connect_to_smtp()
+                self.smtp_server = self.smtp_connection()
                 self.send_email(notification.message, email_data)
         except smtplib.SMTPException:
             await self.proccess_retry(notification.notification_id)
