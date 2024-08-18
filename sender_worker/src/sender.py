@@ -6,6 +6,7 @@ from logging import getLogger
 
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo.errors import PyMongoError
 
 from config import settings
 from models import (
@@ -54,7 +55,7 @@ class BaseSender(ABC):
                     }
                 },
             )
-        except Exception:
+        except PyMongoError:
             logger.exception(f"failed to update notificatio status {notification_id}")
 
     async def proccess_retry(self, notification_id: str):
@@ -62,7 +63,7 @@ class BaseSender(ABC):
             notification_dict = await self.mongo[self.notification_collection].find_one(
                 {"_id": ObjectId(notification_id)}
             )
-        except Exception:
+        except PyMongoError:
             logger.exception(f"failed to get notification from db {notification_id}")
             raise
         notification_db = NotificationDB.model_validate(notification_dict)
@@ -83,7 +84,7 @@ class BaseSender(ABC):
                 filter={"_id": ObjectId(notification_id)},
                 replacement=notification_db.model_dump(),
             )
-        except Exception:
+        except PyMongoError:
             logger.exception(f"failed to update notification status {notification_db}")
             raise
 
@@ -114,29 +115,29 @@ class EmailSender(BaseSender):
     ) -> None:
         super().__init__(mongo_db, event_collection, notification_collection)
 
+        self.smtp_server: smtplib.SMTP = self.smtp_connection()
         self.smtp_host = settings.email.host
         self.smtp_port = settings.email.port
         self.username = settings.email.username
         self.password = settings.email.password
-        self.connect_to_smtp()
 
-    def connect_to_smtp(self):
+    def smtp_connection(self) -> smtplib.SMTP:
         smtp_server = smtplib.SMTP(self.smtp_host, self.smtp_port)
         # mailhog не поддерживает TLS
         # smtp_server.starttls()
         smtp_server.login(self.username, self.password)
-        self.smtp_server = smtp_server
+        return smtp_server
 
     def send_email(self, message: str, email_data: EmailData):
         msg = EmailMessage()
-        FROM_EMAIL = settings.email.sender_address
-        TO_EMAIL = email_data.email
+        from_email = settings.email.sender_address
+        to_email = email_data.email
 
-        msg["From"] = FROM_EMAIL
-        msg["To"] = ",".join([TO_EMAIL])
+        msg["From"] = from_email
+        msg["To"] = ",".join([to_email])
         msg["Subject"] = email_data.subject
         msg.add_alternative(message, subtype="html")
-        self.smtp_server.sendmail(FROM_EMAIL, [TO_EMAIL], msg.as_string())
+        self.smtp_server.sendmail(from_email, [to_email], msg.as_string())
 
     async def process(self, notification: NotificationQueue) -> None:
         email_data = EmailData.model_validate(notification.data)
@@ -147,7 +148,7 @@ class EmailSender(BaseSender):
             except smtplib.SMTPServerDisconnected:
                 if self.smtp_server:
                     self.smtp_server.quit()
-                self.connect_to_smtp()
+                self.smtp_server = self.smtp_connection()
                 self.send_email(notification.message, email_data)
         except smtplib.SMTPException:
             await self.proccess_retry(notification.notification_id)
@@ -160,7 +161,6 @@ class EmailSender(BaseSender):
 class WebsockerSender(BaseSender):
     """Подозрительно быстрый отправщик в вебсокеты"""
 
-    async def send_notification(self, raw_notification: dict) -> None:
-        notification = NotificationQueue.model_validate(raw_notification)
+    async def process(self, notification: NotificationQueue) -> None:
         await self.set_success(notification.notification_id)
         logger.info(f"sent message to websocket {notification.message}")
