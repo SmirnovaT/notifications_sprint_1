@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     """Главный класс настроек всего приложения"""
+
     project_name: str = "notifications_data_mock_api"
 
     model_config = SettingsConfigDict(

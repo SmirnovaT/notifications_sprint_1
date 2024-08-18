@@ -1,11 +1,12 @@
 import calendar
 import datetime as dt
 import logging
+
 from datetime import datetime, timedelta
-import os
 from typing import Tuple
 
 import jwt
+
 
 def calculate_current_date_and_time() -> Tuple[dt, int]:
     """Calculates current date and time"""
@@ -17,13 +18,12 @@ def calculate_current_date_and_time() -> Tuple[dt, int]:
 
     return current_date_and_time_datetime, current_date_and_time_timestamp
 
+
 def calculate_iat_and_exp_tokens() -> Tuple[int, int, int]:
     """
     Calculates 'iat' and 'exp' for access and refresh tokens
     """
-    current_date_and_time_datetime, iat_timestamp = (
-        calculate_current_date_and_time()
-    )
+    current_date_and_time_datetime, iat_timestamp = calculate_current_date_and_time()
 
     exp_access_token = current_date_and_time_datetime + timedelta(days=1)
     exp_refresh_token = current_date_and_time_datetime + timedelta(days=10)
@@ -32,6 +32,7 @@ def calculate_iat_and_exp_tokens() -> Tuple[int, int, int]:
     exp_refresh_token_timestamp = int(calendar.timegm(exp_refresh_token.timetuple()))
 
     return iat_timestamp, exp_access_token_timestamp, exp_refresh_token_timestamp
+
 
 def create_access_token(private_key: str) -> str:
     """Creates a pair of access and refresh tokens"""
