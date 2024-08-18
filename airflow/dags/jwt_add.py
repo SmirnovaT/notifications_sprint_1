@@ -3,14 +3,9 @@ import datetime as dt
 import logging
 from datetime import datetime, timedelta
 import os
-from dotenv import load_dotenv
 from typing import Tuple
 
 import jwt
-
-
-load_dotenv()
-PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 
 def calculate_current_date_and_time() -> Tuple[dt, int]:
     """Calculates current date and time"""
@@ -38,7 +33,7 @@ def calculate_iat_and_exp_tokens() -> Tuple[int, int, int]:
 
     return iat_timestamp, exp_access_token_timestamp, exp_refresh_token_timestamp
 
-def create_access_token() -> str:
+def create_access_token(private_key: str) -> str:
     """Creates a pair of access and refresh tokens"""
 
     iat, exp_access_token, exp_refresh_token = calculate_iat_and_exp_tokens()
@@ -56,7 +51,7 @@ def create_access_token() -> str:
     try:
         encoded_access_token: str = jwt.encode(
             access_token_payload,
-            PRIVATE_KEY,
+            private_key,
             algorithm="RS256",
             headers=headers,
         )
