@@ -29,16 +29,17 @@ def send_news():
         data = {
             "data": raw_json,
             "type": "news",
-            "event_date": pendulum.now('UTC'),
+            "event_date": str(pendulum.now('UTC')),
             "send_date": None,
         }
         load_dotenv()
         PRIVATE_KEY = os.getenv('PRIVATE_KEY')
         API_URL = os.getenv('API_URL')
-        httpx.post(API_URL,
-                   data= data,
+        response = httpx.post(API_URL,
+                   json = data,
                    cookies={"access_token": jwt_add.create_access_token(PRIVATE_KEY)}
                    )
+        print(response.text)
 
     raw_json = {"message": Variable.get("message"), "send_date": Variable.get("send_date")}
     prepare_email(raw_json)
