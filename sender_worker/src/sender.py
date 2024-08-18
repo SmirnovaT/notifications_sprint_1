@@ -160,7 +160,6 @@ class EmailSender(BaseSender):
 class WebsockerSender(BaseSender):
     """Подозрительно быстрый отправщик в вебсокеты"""
 
-    async def send_notification(self, raw_notification: dict) -> None:
-        notification = NotificationQueue.model_validate(raw_notification)
+    async def process(self, notification: NotificationQueue) -> None:
         await self.set_success(notification.notification_id)
         logger.info(f"sent message to websocket {notification.message}")
