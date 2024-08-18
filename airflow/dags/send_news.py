@@ -4,6 +4,7 @@ import sys
 
 import httpx
 import pendulum
+from dotenv import load_dotenv
 
 from airflow.decorators import dag, task
 from airflow.models import Variable
@@ -28,12 +29,15 @@ def send_news():
         data = {
             "data": raw_json,
             "type": "news",
-            "event_date": pendulum.now('UTC'),
+            "event_date": str(pendulum.now('UTC')),
             "send_date": None,
         }
-        httpx.post('http://nginx:80/api/v1/notification/',
-                   data= data,
-                   cookies={"access_token": jwt_add.create_access_token()}
+        load_dotenv()
+        PRIVATE_KEY = os.getenv('PRIVATE_KEY')
+        API_URL = os.getenv('API_URL')
+        response = httpx.post(API_URL,
+                   json = data,
+                   cookies={"access_token": jwt_add.create_access_token(PRIVATE_KEY)}
                    )
 
     raw_json = {"message": Variable.get("message"), "send_date": Variable.get("send_date")}
