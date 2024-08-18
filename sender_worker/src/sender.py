@@ -6,6 +6,7 @@ from logging import getLogger
 
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo.errors import PyMongoError
 
 from config import settings
 from models import (
@@ -54,7 +55,7 @@ class BaseSender(ABC):
                     }
                 },
             )
-        except Exception:
+        except PyMongoError:
             logger.exception(f"failed to update notificatio status {notification_id}")
 
     async def proccess_retry(self, notification_id: str):
@@ -62,7 +63,7 @@ class BaseSender(ABC):
             notification_dict = await self.mongo[self.notification_collection].find_one(
                 {"_id": ObjectId(notification_id)}
             )
-        except Exception:
+        except PyMongoError:
             logger.exception(f"failed to get notification from db {notification_id}")
             raise
         notification_db = NotificationDB.model_validate(notification_dict)
@@ -83,7 +84,7 @@ class BaseSender(ABC):
                 filter={"_id": ObjectId(notification_id)},
                 replacement=notification_db.model_dump(),
             )
-        except Exception:
+        except PyMongoError:
             logger.exception(f"failed to update notification status {notification_db}")
             raise
 
